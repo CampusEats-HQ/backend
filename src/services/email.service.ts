@@ -1,12 +1,12 @@
-import { transporter } from '../config/mailer';
+import { resend } from '../config/mailer';
 
-const FROM = process.env.SMTP_FROM ?? 'CampusEats <noreply@campuseats.ng>';
+const FROM = process.env.RESEND_FROM ?? 'CampusEats <noreply@campuseats.ng>';
 
 export async function sendOTPEmail(email: string, otp: string, type: 'verification' | 'reset'): Promise<void> {
   const subject = type === 'verification' ? 'Verify your CampusEats account' : 'Reset your CampusEats password';
   const action = type === 'verification' ? 'verify your email' : 'reset your password';
 
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject,
@@ -24,7 +24,7 @@ export async function sendOTPEmail(email: string, otp: string, type: 'verificati
 }
 
 export async function sendRiderCredentials(email: string, name: string, password: string): Promise<void> {
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: 'Your CampusEats Rider Account Is Ready',
@@ -43,7 +43,7 @@ export async function sendRiderCredentials(email: string, name: string, password
 }
 
 export async function sendVendorCredentials(email: string, name: string, password: string): Promise<void> {
-  await transporter.sendMail({
+  await resend.emails.send({
     from: FROM,
     to: email,
     subject: 'Your CampusEats Vendor Account Is Ready',
