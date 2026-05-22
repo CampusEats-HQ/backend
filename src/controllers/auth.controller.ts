@@ -30,7 +30,7 @@ export async function customerRegister(req: Request, res: Response, next: NextFu
 
     const otp = generateOTP();
     await OTP.create({ email, otp, type: 'verification', expiresAt: otpExpiresAt() });
-    await sendOTPEmail(email, otp, 'verification');
+    await sendOTPEmail(email, otp, 'verification', user.firstName);
 
     created(res, { message: 'OTP sent to your email', email: user.email });
   } catch (err) {
