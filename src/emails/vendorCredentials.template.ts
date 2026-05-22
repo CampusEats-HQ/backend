@@ -2,7 +2,7 @@ import { baseLayout, ctaButton } from './base.template';
 
 export function vendorCredentialsTemplate(name: string, email: string, password: string): string {
   return baseLayout(`
-    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">Your vendor account is live 🍽️</h1>
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">Your vendor account is live</h1>
     <p style="margin:0 0 24px;font-size:15px;color:#444444;line-height:1.6">
       Welcome aboard, ${name}! Your CampusEats vendor account is ready. Log in to start managing your menu and orders.
     </p>

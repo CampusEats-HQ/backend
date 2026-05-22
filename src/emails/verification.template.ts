@@ -4,7 +4,7 @@ export function verificationTemplate(firstName: string, otp: string, expiryMinut
   const spaced = otp.split('').join('&nbsp;&nbsp;');
 
   return baseLayout(`
-    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">Welcome to CampusEats, ${firstName}! 🎉</h1>
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">Welcome to CampusEats, ${firstName}!</h1>
     <p style="margin:0 0 24px;font-size:15px;color:#444444;line-height:1.6">
       You're almost in! Use the code below to finish setting up your account.
     </p>

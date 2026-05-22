@@ -13,8 +13,8 @@ export function baseLayout(content: string): string {
 
           <!-- Header -->
           <tr>
-            <td style="background:#6366f1;padding:20px 32px">
-              <img src="https://staging.campus-eats.me/logo.png" alt="CampusEats" height="36" style="display:block;border:0" />
+            <td style="background:#6366f1;padding:24px 32px;text-align:center">
+              <img src="https://staging.campus-eats.me/logo.png" alt="CampusEats" width="180" style="display:block;margin:0 auto;border:0" />
             </td>
           </tr>
 

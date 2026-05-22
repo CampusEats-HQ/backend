@@ -2,7 +2,7 @@ import { baseLayout, ctaButton } from './base.template';
 
 export function riderCredentialsTemplate(name: string, email: string, password: string): string {
   return baseLayout(`
-    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">You're approved! Start delivering 🛵</h1>
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#111111">You're approved! Start delivering</h1>
     <p style="margin:0 0 24px;font-size:15px;color:#444444;line-height:1.6">
       Welcome to the team, ${name}! Your rider account is ready. Here are your login credentials:
     </p>
