@@ -22,7 +22,14 @@ const app = express();
 // ─── Security & logging ───────────────────────────────────────────────────────
 
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL ?? '*', credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://staging.campus-eats.me',
+    'https://app.campus-eats.me',
+  ],
+  credentials: true,
+}));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
@@ -48,22 +55,22 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime() });
+app.get('/api/v1/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
-app.use('/v1/auth', authLimiter, authRoutes);
-app.use('/v1/restaurants', restaurantRoutes);
-app.use('/v1/orders', orderRoutes);
-app.use('/v1/delivery-locations', deliveryLocationRoutes);
-app.use('/v1/addresses', addressRoutes);
-app.use('/v1/notifications', notificationRoutes);
-app.use('/v1/profile', profileRoutes);
-app.use('/v1/vendor', vendorRoutes);
-app.use('/v1/rider', riderRoutes);
-app.use('/v1/admin', adminRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use('/api/v1/restaurants', restaurantRoutes);
+app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/delivery-locations', deliveryLocationRoutes);
+app.use('/api/v1/addresses', addressRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/profile', profileRoutes);
+app.use('/api/v1/vendor', vendorRoutes);
+app.use('/api/v1/rider', riderRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // ─── Error handling ───────────────────────────────────────────────────────────
 
