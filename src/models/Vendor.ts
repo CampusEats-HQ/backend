@@ -16,6 +16,7 @@ const VendorSchema = new Schema<IVendor>(
     bankName: { type: String },
     accountNumber: { type: String },
     isOpen: { type: Boolean, default: false },
+    sponsored: { type: Boolean, default: false },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     password: { type: String, required: true, select: false },
   },

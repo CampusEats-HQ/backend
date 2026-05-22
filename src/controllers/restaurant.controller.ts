@@ -26,6 +26,7 @@ export async function listRestaurants(req: Request, res: Response, next: NextFun
       deliveryFee: 400,
       image: v.image ?? null,
       isOpen: v.isOpen,
+      sponsored: v.sponsored,
     }));
 
     ok(res, { restaurants });

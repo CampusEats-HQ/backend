@@ -38,6 +38,7 @@ export interface IVendor extends Document {
   bankName?: string;
   accountNumber?: string;
   isOpen: boolean;
+  sponsored: boolean;
   status: 'active' | 'inactive';
   password: string;
   createdAt: Date;
