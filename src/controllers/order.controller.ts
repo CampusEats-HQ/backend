@@ -137,7 +137,8 @@ export async function getOrders(req: AuthRequest, res: Response, next: NextFunct
 export async function getOrder(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const user = await User.findOne({ publicId: req.user!.id });
-    const order = await Order.findOne({ publicId: req.params.orderId, customerId: user!._id })
+    if (!user) { fail(res, 404, 'User not found'); return; }
+    const order = await Order.findOne({ publicId: req.params.orderId, customerId: user._id })
       .populate<{ vendorId: { name: string } }>('vendorId', 'name')
       .populate<{ riderId: { name: string; phone: string; rating: number; publicId: string } }>(
         'riderId',
