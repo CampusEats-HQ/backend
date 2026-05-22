@@ -46,7 +46,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
         expiresAt: { $gt: new Date() },
       });
       if (promo) {
-        discount = Math.round((subtotal * promo.discountPercent) / 100);
+        discount = Math.round((subtotal * (promo.discountPercent ?? 0)) / 100);
       }
     }
 
@@ -187,11 +187,11 @@ export async function applyPromo(req: AuthRequest, res: Response, next: NextFunc
       return;
     }
 
-    const discountAmount = Math.round((subtotal * promo.discountPercent) / 100);
+    const discountAmount = Math.round((subtotal * (promo.discountPercent ?? 0)) / 100);
 
     ok(res, {
       valid: true,
-      discountPercent: promo.discountPercent,
+      discountPercent: promo.discountPercent ?? 0,
       discountAmount,
       newSubtotal: subtotal - discountAmount,
     });
