@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Vendor from '../models/Vendor';
 import MenuItem from '../models/MenuItem';
+import Order from '../models/Order';
 import Promo from '../models/Promo';
 import { ok, fail } from '../utils/response';
 
@@ -77,22 +78,41 @@ export async function getRestaurant(req: Request, res: Response, next: NextFunct
 
 export async function getPopularItems(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const items = await MenuItem.find({ available: true })
-      .populate<{ vendorId: { name: string; publicId: string } }>('vendorId', 'name publicId')
-      .limit(20)
-      .sort({ createdAt: -1 });
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const result = items.map((item) => {
-      const vendor = item.vendorId as unknown as { name: string; publicId: string };
-      return {
-        id: item.publicId,
-        name: item.name,
-        restaurant: vendor.name,
-        restaurantId: vendor.publicId,
-        price: item.price,
-        image: item.image ?? null,
-      };
-    });
+    const topItems = await Order.aggregate<{ itemId: string; orderCount: number }>([
+      { $match: { placedAt: { $gte: since }, status: { $nin: ['cancelled'] } } },
+      { $unwind: '$items' },
+      { $group: { _id: '$items.itemId', orderCount: { $sum: '$items.quantity' } } },
+      { $sort: { orderCount: -1 } },
+      { $limit: 20 },
+      { $project: { _id: 0, itemId: '$_id', orderCount: 1 } },
+    ]);
+
+    if (!topItems.length) {
+      ok(res, { items: [] });
+      return;
+    }
+
+    const itemIds = topItems.map((t) => t.itemId);
+    const menuItems = await MenuItem.find({ publicId: { $in: itemIds }, available: true })
+      .populate<{ vendorId: { name: string; publicId: string } }>('vendorId', 'name publicId');
+
+    const countMap = new Map(topItems.map((t) => [t.itemId, t.orderCount]));
+
+    const result = menuItems
+      .sort((a, b) => (countMap.get(b.publicId) ?? 0) - (countMap.get(a.publicId) ?? 0))
+      .map((item) => {
+        const vendor = item.vendorId as unknown as { name: string; publicId: string };
+        return {
+          id: item.publicId,
+          name: item.name,
+          restaurant: vendor.name,
+          restaurantId: vendor.publicId,
+          price: item.price,
+          image: item.image ?? null,
+        };
+      });
 
     ok(res, { items: result });
   } catch (err) {
