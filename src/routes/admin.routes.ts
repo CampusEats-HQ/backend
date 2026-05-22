@@ -18,6 +18,10 @@ import {
   getRiderPayouts,
   settlePayment,
   getSettlements,
+  getPromos,
+  createPromo,
+  updatePromo,
+  deletePromo,
 } from '../controllers/admin.controller';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -49,7 +53,7 @@ router.post('/vendors', validate(z.object({
   ownerPhone: z.string().min(10),
   location: z.string().min(2),
   bankName: z.string().min(2),
-  accountNumber: z.string().length(10),
+  accountNumber: z.string().min(10).max(10),
 })), createVendor);
 router.put('/vendors/:id/status', validate(z.object({ status: z.enum(['active', 'inactive']) })), setVendorStatus);
 
@@ -62,5 +66,19 @@ router.get('/finance/payouts/vendors', getVendorPayouts);
 router.get('/finance/payouts/riders', getRiderPayouts);
 router.post('/finance/payouts/:id/settle', settlePayment);
 router.get('/finance/settlements', getSettlements);
+
+// Promos
+const promoSchema = z.object({
+  emoji: z.string().optional(),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  bg: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
+router.get('/promos', getPromos);
+router.post('/promos', validate(promoSchema), createPromo);
+router.put('/promos/:id', validate(promoSchema), updatePromo);
+router.delete('/promos/:id', deletePromo);
 
 export default router;

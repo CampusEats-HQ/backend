@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import Order from '../models/Order';
 import Rider from '../models/Rider';
 import RiderApplication from '../models/RiderApplication';
+import Promo from '../models/Promo';
 import Vendor from '../models/Vendor';
 import User from '../models/User';
 import Settlement from '../models/Settlement';
@@ -521,6 +522,71 @@ export async function getSettlements(req: AuthRequest, res: Response, next: Next
         reference: s.reference,
       })),
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+// ─── Promos ───────────────────────────────────────────────────────────────────
+
+export async function getPromos(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const promos = await Promo.find().sort({ createdAt: -1 });
+    ok(res, {
+      promos: promos.map((p) => ({
+        id: p.publicId,
+        emoji: p.emoji ?? null,
+        title: p.title ?? null,
+        subtitle: p.subtitle ?? null,
+        bg: p.bg ?? null,
+        active: p.active,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createPromo(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { emoji, title, subtitle, bg, active } = req.body as {
+      emoji?: string; title?: string; subtitle?: string; bg?: string; active?: boolean;
+    };
+    const promo = await Promo.create({ emoji, title, subtitle, bg, active: active ?? true });
+    created(res, { id: promo.publicId, emoji: promo.emoji, title: promo.title, subtitle: promo.subtitle, bg: promo.bg, active: promo.active });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function updatePromo(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const promo = await Promo.findOne({ publicId: req.params.id });
+    if (!promo) { fail(res, 404, 'Promo not found'); return; }
+
+    const { emoji, title, subtitle, bg, active } = req.body as {
+      emoji?: string; title?: string; subtitle?: string; bg?: string; active?: boolean;
+    };
+
+    if (emoji !== undefined) promo.emoji = emoji;
+    if (title !== undefined) promo.title = title;
+    if (subtitle !== undefined) promo.subtitle = subtitle;
+    if (bg !== undefined) promo.bg = bg;
+    if (active !== undefined) promo.active = active;
+    await promo.save();
+
+    ok(res, { id: promo.publicId, emoji: promo.emoji, title: promo.title, subtitle: promo.subtitle, bg: promo.bg, active: promo.active });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deletePromo(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const promo = await Promo.findOneAndDelete({ publicId: req.params.id });
+    if (!promo) { fail(res, 404, 'Promo not found'); return; }
+    ok(res, { message: 'Promo deleted' });
   } catch (err) {
     next(err);
   }

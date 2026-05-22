@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth.routes';
 import restaurantRoutes from './routes/restaurant.routes';
 import orderRoutes from './routes/order.routes';
+import paymentRoutes from './routes/payment.routes';
 import deliveryLocationRoutes from './routes/deliveryLocation.routes';
 import addressRoutes from './routes/address.routes';
 import notificationRoutes from './routes/notification.routes';
@@ -14,6 +15,7 @@ import profileRoutes from './routes/profile.routes';
 import vendorRoutes from './routes/vendor.routes';
 import riderRoutes from './routes/rider.routes';
 import adminRoutes from './routes/admin.routes';
+import { handleWebhook } from './controllers/payment.controller';
 
 import { errorHandler, notFound } from './middleware/errorHandler';
 
@@ -48,6 +50,10 @@ const globalLimiter = rateLimit({
 
 app.use(globalLimiter);
 
+// ─── Paystack webhook (raw body required for signature verification) ──────────
+
+app.post('/api/v1/payments/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
 // ─── Body parsing ─────────────────────────────────────────────────────────────
 
 app.use(express.json({ limit: '10mb' }));
@@ -64,6 +70,7 @@ app.get('/api/v1/health', (_req, res) => {
 app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/restaurants', restaurantRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/delivery-locations', deliveryLocationRoutes);
 app.use('/api/v1/addresses', addressRoutes);
 app.use('/api/v1/notifications', notificationRoutes);

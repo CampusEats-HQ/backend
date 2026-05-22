@@ -113,6 +113,8 @@ export interface IOrder extends Document {
   discount: number;
   total: number;
   status: 'pending' | 'preparing' | 'ready' | 'on-the-way' | 'delivered' | 'cancelled';
+  paymentStatus: 'pending' | 'paid' | 'failed';
+  paystackReference?: string;
   specialInstructions?: string;
   rated: boolean;
   placedAt: Date;
@@ -161,9 +163,14 @@ export interface IOTP extends Document {
 }
 
 export interface IPromo extends Document {
-  code: string;
-  discountPercent: number;
-  expiresAt: Date;
+  publicId: string;
+  emoji?: string;
+  title?: string;
+  subtitle?: string;
+  bg?: string;
+  code?: string;
+  discountPercent?: number;
+  expiresAt?: Date;
   active: boolean;
 }
 

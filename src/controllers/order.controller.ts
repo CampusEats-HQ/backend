@@ -10,7 +10,6 @@ import Rating from '../models/Rating';
 import Notification from '../models/Notification';
 import { AuthRequest } from '../types';
 import { ok, created, fail } from '../utils/response';
-import { broadcastNewOrder } from '../socket';
 
 const DELIVERY_FEE = 400;
 
@@ -75,18 +74,10 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
       message: `Your order from ${vendor.name} has been placed and is awaiting confirmation.`,
     });
 
-    broadcastNewOrder({
-      id: order.publicId,
-      restaurant: { name: vendor.name, location: vendor.location },
-      customer: { name: `${user!.firstName} ${user!.lastName}`, phone: user!.phone ?? '', location: deliveryLocation },
-      items: items.map((i) => `${i.name} x${i.quantity}`),
-      distance: '~4 min walk',
-      payout: 300,
-    });
-
     created(res, {
       orderId: order.publicId,
       status: order.status,
+      paymentRequired: true,
       estimatedDeliveryTime: '25-35 min',
       subtotal,
       deliveryFee: DELIVERY_FEE,

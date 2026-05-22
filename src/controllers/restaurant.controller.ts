@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import Vendor from '../models/Vendor';
 import MenuItem from '../models/MenuItem';
+import Promo from '../models/Promo';
 import { ok, fail } from '../utils/response';
 
 export async function listRestaurants(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -94,6 +95,23 @@ export async function getPopularItems(req: Request, res: Response, next: NextFun
     });
 
     ok(res, { items: result });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getActivePromos(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const promos = await Promo.find({ active: true }).sort({ createdAt: -1 });
+    ok(res, {
+      promos: promos.map((p) => ({
+        id: p.publicId,
+        emoji: p.emoji ?? null,
+        title: p.title ?? null,
+        subtitle: p.subtitle ?? null,
+        bg: p.bg ?? null,
+      })),
+    });
   } catch (err) {
     next(err);
   }

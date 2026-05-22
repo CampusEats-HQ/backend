@@ -24,7 +24,7 @@ const placeOrderSchema = z.object({
     })
   ).min(1),
   deliveryLocation: z.string().min(1),
-  paymentMethod: z.enum(['card', 'wallet', 'cash']),
+  paymentMethod: z.enum(['card', 'wallet']),
   promoCode: z.string().optional(),
 });
 
