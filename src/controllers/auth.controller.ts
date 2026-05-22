@@ -16,8 +16,9 @@ import { ok, created, fail } from '../utils/response';
 
 export async function customerRegister(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fullName, email, password } = req.body as {
-      fullName: string;
+    const { firstName, lastName, email, password } = req.body as {
+      firstName: string;
+      lastName: string;
       email: string;
       password: string;
     };
@@ -25,14 +26,13 @@ export async function customerRegister(req: Request, res: Response, next: NextFu
     const exists = await User.findOne({ email });
     if (exists) { fail(res, 409, 'Email already registered'); return; }
 
-    const user = await User.create({ fullName, email, password });
+    const user = await User.create({ firstName, lastName, email, password });
 
     const otp = generateOTP();
     await OTP.create({ email, otp, type: 'verification', expiresAt: otpExpiresAt() });
     await sendOTPEmail(email, otp, 'verification');
 
-    const token = signToken({ id: user.publicId, role: 'customer' });
-    created(res, { token, user: { id: user.publicId, fullName: user.fullName, email: user.email } });
+    created(res, { message: 'OTP sent to your email', email: user.email });
   } catch (err) {
     next(err);
   }
@@ -49,7 +49,7 @@ export async function customerLogin(req: Request, res: Response, next: NextFunct
     }
 
     const token = signToken({ id: user.publicId, role: 'customer' });
-    ok(res, { token, user: { id: user.publicId, fullName: user.fullName, email: user.email } });
+    ok(res, { token, user: { id: user.publicId, firstName: user.firstName, lastName: user.lastName, email: user.email } });
   } catch (err) {
     next(err);
   }
@@ -67,10 +67,12 @@ export async function verifyOTP(req: Request, res: Response, next: NextFunction)
     if (record.expiresAt < new Date()) { await record.deleteOne(); fail(res, 410, 'OTP has expired'); return; }
     if (record.otp !== otp) { fail(res, 400, 'OTP is incorrect or malformed'); return; }
 
-    await User.updateOne({ email }, { emailVerified: true });
+    const user = await User.findOneAndUpdate({ email }, { emailVerified: true }, { new: true });
+    if (!user) { fail(res, 404, 'User not found'); return; }
     await record.deleteOne();
 
-    ok(res, { message: 'Email verified successfully', verified: true });
+    const token = signToken({ id: user.publicId, role: 'customer' });
+    ok(res, { token, user: { id: user.publicId, firstName: user.firstName, lastName: user.lastName, email: user.email } });
   } catch (err) {
     next(err);
   }

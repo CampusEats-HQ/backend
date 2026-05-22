@@ -52,16 +52,16 @@ export async function getVendorOrders(req: AuthRequest, res: Response, next: Nex
     if (status) filter.status = status;
 
     const orders = await Order.find(filter)
-      .populate<{ customerId: { fullName: string } }>('customerId', 'fullName')
+      .populate<{ customerId: { firstName: string; lastName: string } }>('customerId', 'firstName lastName')
       .populate<{ riderId: { name: string } }>('riderId', 'name')
       .sort({ placedAt: -1 });
 
     const result = orders.map((o) => {
-      const customer = o.customerId as unknown as { fullName: string };
+      const customer = o.customerId as unknown as { firstName: string; lastName: string };
       const rider = o.riderId as unknown as { name: string } | null;
       return {
         id: o.publicId,
-        customerName: customer.fullName,
+        customerName: `${customer.firstName} ${customer.lastName}`,
         items: o.items.map((i) => ({ name: i.name, quantity: i.quantity, price: i.price })),
         total: o.total,
         status: o.status,

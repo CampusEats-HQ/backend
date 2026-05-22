@@ -7,7 +7,8 @@ import { validate } from '../middleware/validate';
 const router = Router();
 
 const updateSchema = z.object({
-  fullName: z.string().min(2).optional(),
+  firstName: z.string().min(2).optional(),
+  lastName: z.string().min(2).optional(),
   phone: z.string().optional(),
 });
 

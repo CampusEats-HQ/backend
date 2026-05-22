@@ -8,7 +8,8 @@ export async function getProfile(req: AuthRequest, res: Response, next: NextFunc
     const user = await User.findOne({ publicId: req.user!.id });
     ok(res, {
       id: user!.publicId,
-      fullName: user!.fullName,
+      firstName: user!.firstName,
+      lastName: user!.lastName,
       email: user!.email,
       phone: user!.phone ?? null,
     });
@@ -19,14 +20,15 @@ export async function getProfile(req: AuthRequest, res: Response, next: NextFunc
 
 export async function updateProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fullName, phone } = req.body as { fullName?: string; phone?: string };
+    const { firstName, lastName, phone } = req.body as { firstName?: string; lastName?: string; phone?: string };
     const user = await User.findOne({ publicId: req.user!.id });
 
-    if (fullName) user!.fullName = fullName;
+    if (firstName) user!.firstName = firstName;
+    if (lastName) user!.lastName = lastName;
     if (phone) user!.phone = phone;
     await user!.save();
 
-    ok(res, { id: user!.publicId, fullName: user!.fullName, phone: user!.phone ?? null });
+    ok(res, { id: user!.publicId, firstName: user!.firstName, lastName: user!.lastName, phone: user!.phone ?? null });
   } catch (err) {
     next(err);
   }

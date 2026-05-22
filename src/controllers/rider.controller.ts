@@ -54,18 +54,18 @@ export async function getIncomingOrder(req: AuthRequest, res: Response, next: Ne
   try {
     const order = await Order.findOne({ riderId: null, status: 'ready' })
       .populate<{ vendorId: { name: string; location: string } }>('vendorId', 'name location')
-      .populate<{ customerId: { fullName: string; phone: string } }>('customerId', 'fullName phone');
+      .populate<{ customerId: { firstName: string; lastName: string; phone: string } }>('customerId', 'firstName lastName phone');
 
     if (!order) { ok(res, { order: null }); return; }
 
     const vendor = order.vendorId as unknown as { name: string; location: string };
-    const customer = order.customerId as unknown as { fullName: string; phone: string };
+    const customer = order.customerId as unknown as { firstName: string; lastName: string; phone: string };
 
     ok(res, {
       order: {
         id: order.publicId,
         restaurant: { name: vendor.name, location: vendor.location },
-        customer: { name: customer.fullName, phone: customer.phone, location: order.deliveryLocation },
+        customer: { name: `${customer.firstName} ${customer.lastName}`, phone: customer.phone, location: order.deliveryLocation },
         items: order.items.map((i) => `${i.name} x${i.quantity}`),
         distance: '~4 min walk',
         payout: 300,
@@ -82,7 +82,7 @@ export async function acceptOrder(req: AuthRequest, res: Response, next: NextFun
 
     const order = await Order.findOne({ publicId: req.params.id, status: 'ready' })
       .populate<{ vendorId: { name: string; location: string } }>('vendorId', 'name location')
-      .populate<{ customerId: { fullName: string; phone: string } }>('customerId', 'fullName phone');
+      .populate<{ customerId: { firstName: string; lastName: string; phone: string } }>('customerId', 'firstName lastName phone');
 
     if (!order || order.riderId) { fail(res, 409, 'Order already accepted by another rider or expired'); return; }
 
@@ -93,13 +93,13 @@ export async function acceptOrder(req: AuthRequest, res: Response, next: NextFun
     broadcastOrderTaken(order.publicId);
 
     const vendor = order.vendorId as unknown as { name: string; location: string };
-    const customer = order.customerId as unknown as { fullName: string; phone: string };
+    const customer = order.customerId as unknown as { firstName: string; lastName: string; phone: string };
 
     ok(res, {
       delivery: {
         id: order.publicId,
         restaurant: { name: vendor.name, location: vendor.location },
-        customer: { name: customer.fullName, phone: customer.phone, location: order.deliveryLocation },
+        customer: { name: `${customer.firstName} ${customer.lastName}`, phone: customer.phone, location: order.deliveryLocation },
         items: order.items.map((i) => `${i.name} x${i.quantity}`),
         currentStep: 1,
       },

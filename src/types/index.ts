@@ -15,7 +15,8 @@ export type UserRole = 'customer' | 'vendor' | 'rider' | 'admin';
 export interface IUser extends Document {
   _id: Types.ObjectId;
   publicId: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   phone?: string;

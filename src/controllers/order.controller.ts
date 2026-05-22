@@ -78,7 +78,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
     broadcastNewOrder({
       id: order.publicId,
       restaurant: { name: vendor.name, location: vendor.location },
-      customer: { name: user!.fullName, phone: user!.phone ?? '', location: deliveryLocation },
+      customer: { name: `${user!.firstName} ${user!.lastName}`, phone: user!.phone ?? '', location: deliveryLocation },
       items: items.map((i) => `${i.name} x${i.quantity}`),
       distance: '~4 min walk',
       payout: 300,

@@ -6,7 +6,8 @@ import { generatePublicId } from '../utils/generateId';
 const UserSchema = new Schema<IUser>(
   {
     publicId: { type: String, unique: true },
-    fullName: { type: String, required: true, trim: true },
+    firstName: { type: String, required: true, trim: true },
+    lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6, select: false },
     phone: { type: String, trim: true },
