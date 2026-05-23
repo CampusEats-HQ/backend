@@ -20,6 +20,6 @@ export function riderCredentialsTemplate(name: string, email: string, password: 
 
     <p style="margin:0 0 4px;font-size:13px;color:#888888">Please change your password after your first login.</p>
 
-    ${ctaButton('Go to Rider Portal', 'https://app.campus-eats.me/rider/login')}
+    ${ctaButton('Go to Rider Portal', `${process.env.FRONTEND_URL ?? 'https://app.campus-eats.me'}/rider/login`)}
   `);
 }

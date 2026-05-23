@@ -20,6 +20,6 @@ export function vendorCredentialsTemplate(name: string, email: string, password:
 
     <p style="margin:0 0 4px;font-size:13px;color:#888888">Change your password immediately after logging in.</p>
 
-    ${ctaButton('Go to Vendor Portal', 'https://app.campus-eats.me/vendor/login')}
+    ${ctaButton('Go to Vendor Portal', `${process.env.FRONTEND_URL ?? 'https://app.campus-eats.me'}/vendor/login`)}
   `);
 }
