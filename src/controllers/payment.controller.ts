@@ -4,7 +4,7 @@ import User from '../models/User';
 import Vendor from '../models/Vendor';
 import { AuthRequest } from '../types';
 import { ok, fail } from '../utils/response';
-import { initializeTransaction, verifyWebhookSignature } from '../services/paystack.service';
+import { initializeTransaction, verifyTransaction, verifyWebhookSignature } from '../services/paystack.service';
 import { broadcastNewOrder } from '../socket';
 
 export async function initializePayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
@@ -27,6 +27,27 @@ export async function initializePayment(req: AuthRequest, res: Response, next: N
     await order.save();
 
     ok(res, { authorizationUrl: authorization_url, reference });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function verifyPayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { reference } = req.params;
+
+    const order = await Order.findOne({ paystackReference: reference });
+    if (!order) { fail(res, 404, 'Order not found'); return; }
+
+    if (order.paymentStatus !== 'paid') {
+      const result = await verifyTransaction(reference);
+      if (result.status === 'success') {
+        order.paymentStatus = 'paid';
+        await order.save();
+      }
+    }
+
+    ok(res, { orderId: order.publicId, paymentStatus: order.paymentStatus });
   } catch (err) {
     next(err);
   }

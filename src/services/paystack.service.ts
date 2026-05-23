@@ -18,7 +18,7 @@ async function request<T>(method: string, path: string, body?: object): Promise<
 export async function initializeTransaction(email: string, amountKobo: number, reference: string): Promise<{ authorization_url: string; reference: string }> {
   const data = await request<{ status: boolean; data: { authorization_url: string; reference: string } }>(
     'POST', '/transaction/initialize',
-    { email, amount: amountKobo, reference, currency: 'NGN' }
+    { email, amount: amountKobo, reference, currency: 'NGN', callback_url: `${process.env.FRONTEND_URL ?? 'https://app.campus-eats.me'}/order/confirm` }
   );
   return data.data;
 }
