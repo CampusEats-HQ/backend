@@ -17,7 +17,7 @@ import {
 } from '../controllers/vendor.controller';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
-import { uploadMenu } from '../middleware/upload';
+import { uploadMenu, uploadProfile } from '../middleware/upload';
 
 const router = Router();
 
@@ -46,7 +46,7 @@ router.get('/earnings', getEarnings);
 
 // Profile
 router.get('/profile', getVendorProfile);
-router.put('/profile', validate(z.object({
+router.put('/profile', uploadProfile.single('image'), validate(z.object({
   name: z.string().optional(),
   category: z.string().optional(),
   location: z.string().optional(),

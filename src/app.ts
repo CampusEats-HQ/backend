@@ -24,14 +24,20 @@ const app = express();
 // ─── Security & logging ───────────────────────────────────────────────────────
 
 app.use(helmet());
-app.use(cors({
+
+const corsOptions = {
   origin: [
     'http://localhost:5173',
     'https://staging.campus-eats.me',
     'https://app.campus-eats.me',
   ],
   credentials: true,
-}));
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────

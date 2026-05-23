@@ -360,14 +360,16 @@ export async function updateVendorProfile(req: AuthRequest, res: Response, next:
   try {
     const vendor = await resolveVendor(req.user!.id);
     const { name, category, location, contact } = req.body as Record<string, string>;
+    const image = (req.file as Express.Multer.File & { path?: string })?.path;
 
     if (name) vendor.name = name;
     if (category) vendor.category = category;
     if (location) vendor.location = location;
     if (contact) vendor.contact = contact;
+    if (image) vendor.image = image;
     await vendor.save();
 
-    ok(res, { name: vendor.name, category: vendor.category, location: vendor.location, contact: vendor.contact ?? null });
+    ok(res, { name: vendor.name, category: vendor.category, location: vendor.location, contact: vendor.contact ?? null, image: vendor.image ?? null });
   } catch (err) {
     next(err);
   }

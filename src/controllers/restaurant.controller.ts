@@ -9,13 +9,16 @@ export async function listRestaurants(req: Request, res: Response, next: NextFun
   try {
     const { category, search } = req.query as { category?: string; search?: string };
 
-    const filter: Record<string, unknown> = { status: 'active' };
+    const filter: Record<string, unknown> = { status: 'active', image: { $exists: true, $ne: null } };
     if (category) filter.category = new RegExp(category, 'i');
     if (search) {
       filter.$or = [
         { name: new RegExp(search, 'i') },
       ];
     }
+
+    const vendorIdsWithMenu = await MenuItem.distinct('vendorId');
+    filter._id = { $in: vendorIdsWithMenu };
 
     const vendors = await Vendor.find(filter).sort({ createdAt: -1 });
 
