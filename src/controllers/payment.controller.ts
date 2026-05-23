@@ -34,7 +34,7 @@ export async function initializePayment(req: AuthRequest, res: Response, next: N
 
 export async function verifyPayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { reference } = req.params;
+    const reference = req.params.reference as string;
 
     const order = await Order.findOne({ paystackReference: reference });
     if (!order) { fail(res, 404, 'Order not found'); return; }
