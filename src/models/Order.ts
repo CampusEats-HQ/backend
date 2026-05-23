@@ -20,7 +20,7 @@ const OrderSchema = new Schema<IOrder>(
     riderId: { type: Schema.Types.ObjectId, ref: 'Rider', index: true },
     items: { type: [OrderItemSchema], required: true },
     deliveryLocation: { type: String, required: true },
-    paymentMethod: { type: String, required: true, enum: ['card', 'wallet'] },
+    paymentMethod: { type: String, required: true, enum: ['card', 'wallet', 'transfer'] },
     promoCode: { type: String },
     subtotal: { type: Number, required: true },
     deliveryFee: { type: Number, required: true, default: 400 },
