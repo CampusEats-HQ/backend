@@ -24,6 +24,7 @@ const OrderSchema = new Schema<IOrder>(
     promoCode: { type: String },
     subtotal: { type: Number, required: true },
     deliveryFee: { type: Number, required: true, default: 400 },
+    packagingFee: { type: Number, required: true, enum: [200, 300] },
     discount: { type: Number, default: 0 },
     total: { type: Number, required: true },
     status: {

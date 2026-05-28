@@ -17,10 +17,11 @@ const DELIVERY_FEE = 400;
 
 export async function placeOrder(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { items, deliveryLocation, paymentMethod, promoCode } = req.body as {
+    const { items, deliveryLocation, paymentMethod, packagingFee, promoCode } = req.body as {
       items: { itemId: string; name: string; price: number; quantity: number; restaurantId: string }[];
       deliveryLocation: string;
       paymentMethod: string;
+      packagingFee: 200 | 300;
       promoCode?: string;
     };
 
@@ -50,7 +51,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
       }
     }
 
-    const total = subtotal + DELIVERY_FEE - discount;
+    const total = subtotal + DELIVERY_FEE + packagingFee - discount;
 
     const user = await User.findOne({ publicId: req.user!.id });
 
@@ -63,6 +64,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
       promoCode,
       subtotal,
       deliveryFee: DELIVERY_FEE,
+      packagingFee,
       discount,
       total,
     });
@@ -81,6 +83,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
       estimatedDeliveryTime: '25-35 min',
       subtotal,
       deliveryFee: DELIVERY_FEE,
+      packagingFee,
       discount,
       total,
     });

@@ -110,6 +110,7 @@ export interface IOrder extends Document {
   promoCode?: string;
   subtotal: number;
   deliveryFee: number;
+  packagingFee: number;
   discount: number;
   total: number;
   status: 'pending' | 'preparing' | 'ready' | 'on-the-way' | 'delivered' | 'cancelled';

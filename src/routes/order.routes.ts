@@ -25,6 +25,7 @@ const placeOrderSchema = z.object({
   ).min(1),
   deliveryLocation: z.string().min(1),
   paymentMethod: z.enum(['card', 'wallet', 'transfer']),
+  packagingFee: z.union([z.literal(200), z.literal(300)]),
   promoCode: z.string().optional(),
 });
 
