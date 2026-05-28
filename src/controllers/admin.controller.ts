@@ -417,7 +417,7 @@ export async function getVendorPayouts(_req: AuthRequest, res: Response, next: N
         const pendingOrders = await Order.find({
           vendorId: v._id,
           status: 'delivered',
-          placedAt: lastSettlement ? { $gt: lastSettlement.date } : {},
+          ...(lastSettlement ? { placedAt: { $gt: lastSettlement.date } } : {}),
         });
         const amountOwed = pendingOrders.reduce((s, o) => s + o.total, 0);
 
@@ -448,7 +448,7 @@ export async function getRiderPayouts(_req: AuthRequest, res: Response, next: Ne
         const pendingDeliveries = await Order.find({
           riderId: r._id,
           status: 'delivered',
-          updatedAt: lastSettlement ? { $gt: lastSettlement.date } : {},
+          ...(lastSettlement ? { updatedAt: { $gt: lastSettlement.date } } : {}),
         });
 
         const amountOwed = pendingDeliveries.length * 300;

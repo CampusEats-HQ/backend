@@ -20,7 +20,7 @@ const registerSchema = z.object({
   firstName: z.string().min(2),
   lastName: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(4),
 });
 
 const loginSchema = z.object({
@@ -38,7 +38,7 @@ const forgotSchema = z.object({ email: z.string().email() });
 const resetSchema = z.object({
   email: z.string().email(),
   otp: z.string().length(6),
-  newPassword: z.string().min(6),
+  newPassword: z.string().min(4),
 });
 
 router.post('/customer/register', validate(registerSchema), customerRegister);
