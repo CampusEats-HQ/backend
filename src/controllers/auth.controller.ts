@@ -133,6 +133,7 @@ export async function vendorLogin(req: Request, res: Response, next: NextFunctio
     if (vendor.status === 'inactive') { fail(res, 403, 'Vendor account inactive'); return; }
 
     const token = signToken({ id: vendor.publicId, role: 'vendor' });
+    const profileComplete = !!(vendor.image && vendor.contact && vendor.openingTime && vendor.closingTime && vendor.bankName && vendor.accountNumber);
     ok(res, {
       token,
       vendor: {
@@ -141,6 +142,7 @@ export async function vendorLogin(req: Request, res: Response, next: NextFunctio
         category: vendor.category,
         location: vendor.location,
         isOpen: vendor.isOpen,
+        profileComplete,
       },
     });
   } catch (err) {
