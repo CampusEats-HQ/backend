@@ -12,6 +12,15 @@ async function resolveVendor(publicId: string) {
   return v;
 }
 
+export function isWithinOperatingHours(openingTime?: string, closingTime?: string): boolean {
+  if (!openingTime || !closingTime) return true;
+  const now = new Date();
+  const watMinutes = (now.getUTCHours() + 1) * 60 + now.getUTCMinutes();
+  const [openH, openM] = openingTime.split(':').map(Number);
+  const [closeH, closeM] = closingTime.split(':').map(Number);
+  return watMinutes >= openH * 60 + openM && watMinutes < closeH * 60 + closeM;
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export async function getDashboard(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
@@ -349,6 +358,8 @@ export async function getVendorProfile(req: AuthRequest, res: Response, next: Ne
       location: vendor.location,
       image: vendor.image ?? null,
       contact: vendor.contact ?? null,
+      openingTime: vendor.openingTime ?? null,
+      closingTime: vendor.closingTime ?? null,
       bankAccount: vendor.bankName && vendor.accountNumber ? `${vendor.bankName} — ${vendor.accountNumber}` : null,
     });
   } catch (err) {
@@ -359,7 +370,7 @@ export async function getVendorProfile(req: AuthRequest, res: Response, next: Ne
 export async function updateVendorProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const vendor = await resolveVendor(req.user!.id);
-    const { name, category, location, contact } = req.body as Record<string, string>;
+    const { name, category, location, contact, openingTime, closingTime } = req.body as Record<string, string>;
     const image = (req.file as Express.Multer.File & { path?: string })?.path;
 
     if (name) vendor.name = name;
@@ -367,9 +378,19 @@ export async function updateVendorProfile(req: AuthRequest, res: Response, next:
     if (location) vendor.location = location;
     if (contact) vendor.contact = contact;
     if (image) vendor.image = image;
+    if (openingTime) vendor.openingTime = openingTime;
+    if (closingTime) vendor.closingTime = closingTime;
     await vendor.save();
 
-    ok(res, { name: vendor.name, category: vendor.category, location: vendor.location, contact: vendor.contact ?? null, image: vendor.image ?? null });
+    ok(res, {
+      name: vendor.name,
+      category: vendor.category,
+      location: vendor.location,
+      contact: vendor.contact ?? null,
+      image: vendor.image ?? null,
+      openingTime: vendor.openingTime ?? null,
+      closingTime: vendor.closingTime ?? null,
+    });
   } catch (err) {
     next(err);
   }

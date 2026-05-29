@@ -10,6 +10,7 @@ import Rating from '../models/Rating';
 import Notification from '../models/Notification';
 import { AuthRequest } from '../types';
 import { ok, created, fail } from '../utils/response';
+import { isWithinOperatingHours } from './vendor.controller';
 
 const DELIVERY_FEE = 400;
 
@@ -31,6 +32,9 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
     const restaurantId = items[0].restaurantId;
     const vendor = await Vendor.findOne({ publicId: restaurantId });
     if (!vendor) { fail(res, 404, 'Restaurant not found'); return; }
+    if (!isWithinOperatingHours(vendor.openingTime, vendor.closingTime)) {
+      fail(res, 400, 'Restaurant is currently closed'); return;
+    }
 
     for (const item of items) {
       const mi = await MenuItem.findOne({ publicId: item.itemId, vendorId: vendor._id });

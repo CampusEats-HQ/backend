@@ -51,6 +51,8 @@ router.put('/profile', uploadProfile.single('image'), validate(z.object({
   category: z.string().optional(),
   location: z.string().optional(),
   contact: z.string().optional(),
+  openingTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  closingTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
 })), updateVendorProfile);
 
 export default router;

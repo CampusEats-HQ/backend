@@ -4,6 +4,7 @@ import MenuItem from '../models/MenuItem';
 import Order from '../models/Order';
 import Promo from '../models/Promo';
 import { ok, fail } from '../utils/response';
+import { isWithinOperatingHours } from './vendor.controller';
 
 export async function listRestaurants(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -30,7 +31,9 @@ export async function listRestaurants(req: Request, res: Response, next: NextFun
       deliveryTime: '12-18 min',
       deliveryFee: 400,
       image: v.image ?? null,
-      isOpen: v.isOpen,
+      isOpen: v.isOpen && isWithinOperatingHours(v.openingTime, v.closingTime),
+      openingTime: v.openingTime ?? null,
+      closingTime: v.closingTime ?? null,
       sponsored: v.sponsored,
     }));
 
@@ -71,7 +74,9 @@ export async function getRestaurant(req: Request, res: Response, next: NextFunct
       deliveryTime: '12-18 min',
       deliveryFee: 400,
       image: vendor.image ?? null,
-      isOpen: vendor.isOpen,
+      isOpen: vendor.isOpen && isWithinOperatingHours(vendor.openingTime, vendor.closingTime),
+      openingTime: vendor.openingTime ?? null,
+      closingTime: vendor.closingTime ?? null,
       menu,
     });
   } catch (err) {
