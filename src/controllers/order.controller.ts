@@ -32,7 +32,7 @@ export async function placeOrder(req: AuthRequest, res: Response, next: NextFunc
     const restaurantId = items[0].restaurantId;
     const vendor = await Vendor.findOne({ publicId: restaurantId });
     if (!vendor) { fail(res, 404, 'Restaurant not found'); return; }
-    if (!vendor.isOpen) {
+    if (!vendor.isOpen && !isWithinOperatingHours(vendor.openingTime, vendor.closingTime)) {
       fail(res, 400, 'Restaurant is currently closed'); return;
     }
 
