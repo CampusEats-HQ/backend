@@ -154,8 +154,12 @@ export async function vendorLogin(req: Request, res: Response, next: NextFunctio
 
 export async function riderRegister(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fullName, email, phone, matricNumber, bankName, accountNumber } = req.body as Record<string, string>;
+    const body = req.body as Record<string, string>;
+    const fullName = body.fullName || body.fullname;
+    const { email, phone, matricNumber, bankName, accountNumber } = body;
     const photo = (req.file as Express.Multer.File & { path?: string })?.path;
+
+    if (!fullName) { fail(res, 400, 'Full name is required'); return; }
 
     const existing = await RiderApplication.findOne({ email });
     if (existing) { fail(res, 409, 'Email already has a pending or active application'); return; }
