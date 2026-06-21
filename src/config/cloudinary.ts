@@ -1,5 +1,5 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,17 +12,26 @@ export { cloudinary };
 export const profileStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'campuseats/profiles',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-    transformation: [{ width: 400, height: 400, crop: 'fill' }],
+    folder: "campuseats/profiles",
+    allowed_formats: ["jpg", "jpeg", "png"],
+    transformation: [{ width: 400, height: 400, crop: "fill" }],
   } as object,
 });
 
 export const menuStorage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'campuseats/menu',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-    transformation: [{ width: 800, height: 600, crop: 'limit' }],
+    folder: "campuseats/menu",
+    allowed_formats: ["jpg", "jpeg", "png"],
+    transformation: [{ width: 800, height: 600, crop: "limit" }],
+  } as object,
+});
+
+export const documentStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "campuseats/documents",
+    allowed_formats: ["jpg", "jpeg", "png", "pdf"],
+    resource_type: "auto",
   } as object,
 });

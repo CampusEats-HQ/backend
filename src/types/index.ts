@@ -1,16 +1,16 @@
-import { Request } from 'express';
-import { Document, Types } from 'mongoose';
+import { Request } from "express";
+import { Document, Types } from "mongoose";
 
 export interface AuthPayload {
   id: string;
-  role: 'customer' | 'vendor' | 'rider' | 'admin';
+  role: "customer" | "vendor" | "rider" | "admin";
 }
 
 export interface AuthRequest extends Request {
   user?: AuthPayload;
 }
 
-export type UserRole = 'customer' | 'vendor' | 'rider' | 'admin';
+export type UserRole = "customer" | "vendor" | "rider" | "admin";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -41,7 +41,7 @@ export interface IVendor extends Document {
   openingTime?: string;
   closingTime?: string;
   sponsored: boolean;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   password: string;
   createdAt: Date;
   comparePassword(candidate: string): Promise<boolean>;
@@ -60,7 +60,7 @@ export interface IRider extends Document {
   rating: number;
   totalDeliveries: number;
   isOnline: boolean;
-  status: 'active' | 'suspended';
+  status: "active" | "suspended";
   password: string;
   createdAt: Date;
   comparePassword(candidate: string): Promise<boolean>;
@@ -76,7 +76,8 @@ export interface IRiderApplication extends Document {
   bankName: string;
   accountNumber: string;
   photo?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  studentIdUrl: string;
+  status: "pending" | "approved" | "rejected";
   rejectionReason?: string;
   submittedDate: Date;
 }
@@ -87,7 +88,7 @@ export interface IAdmin extends Document {
   name: string;
   email: string;
   password: string;
-  role: 'super_admin' | 'admin';
+  role: "super_admin" | "admin";
   createdAt: Date;
   comparePassword(candidate: string): Promise<boolean>;
 }
@@ -115,8 +116,14 @@ export interface IOrder extends Document {
   packagingFee: number;
   discount: number;
   total: number;
-  status: 'pending' | 'preparing' | 'ready' | 'on-the-way' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  status:
+    | "pending"
+    | "preparing"
+    | "ready"
+    | "on-the-way"
+    | "delivered"
+    | "cancelled";
+  paymentStatus: "pending" | "paid" | "failed";
   paystackReference?: string;
   specialInstructions?: string;
   rated: boolean;
@@ -151,7 +158,7 @@ export interface IAddress extends Document {
 export interface INotification extends Document {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
-  type: 'delivery' | 'order' | 'promo' | 'rating';
+  type: "delivery" | "order" | "promo" | "rating";
   title: string;
   message: string;
   read: boolean;
@@ -161,7 +168,7 @@ export interface INotification extends Document {
 export interface IOTP extends Document {
   email: string;
   otp: string;
-  type: 'verification' | 'reset';
+  type: "verification" | "reset";
   expiresAt: Date;
 }
 
@@ -180,7 +187,7 @@ export interface IPromo extends Document {
 export interface ISettlement extends Document {
   _id: Types.ObjectId;
   publicId: string;
-  recipientType: 'vendor' | 'rider';
+  recipientType: "vendor" | "rider";
   recipientId: Types.ObjectId;
   recipientName: string;
   amount: number;
